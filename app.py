@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status, Body
 
 app = FastAPI(title="My First Project")
 
@@ -20,9 +20,11 @@ async def read_message(message_id: int) -> str:
         )
 
 
-@app.post("/messages")
-async def create_message(message: str) -> str:
-    pass
+@app.post("/messages", status_code=status.HTTP_201_CREATED)
+async def create_message(message: str = Body(...)) -> str:
+    current_index = max(messages_db) + 1 if messages_db else 0
+    messages_db[current_index] = message
+    return "Message created!"
 
 
 @app.put("/messages/{message_id}")
